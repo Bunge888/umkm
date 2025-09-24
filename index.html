@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manajemen Penjualan & Stok Barang UMKM</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-store me-2"></i>Manajemen Penjualan & Stok Barang UMKM
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#" data-bs-target="stok-tab"><i class="fas fa-boxes me-1"></i> Stok Barang</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-target="penjualan-tab"><i class="fas fa-cash-register me-1"></i> Penjualan</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="btnPrint"><i class="fas fa-print me-1"></i> Cetak Laporan</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h1 class="h3 mb-0 text-gray-800">Manajemen Penjualan & Stok Barang</h1>
+          <p class="mb-0">Kelola inventaris, stok barang, dan penjualan UMKM Anda dengan mudah</p>
+        </div>
+        <div class="col-md-4 text-end">
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahBarangModal">
+            <i class="fas fa-plus me-1"></i> Tambah Barang
+          </button>
+          <button class="btn btn-sales ms-2" data-bs-target="penjualan-tab" id="btnGotoPenjualan">
+            <i class="fas fa-cash-register me-1"></i> Buat Penjualan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card summary-card total-barang h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Jumlah Barang</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-barang">0</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-boxes fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card summary-card total-stok h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Stok</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-stok">0</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-box fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card summary-card total-nilai h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Nilai Stok</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-nilai">Rp 0</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card summary-card total-penjualan h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-purple text-uppercase mb-1">Penjualan Hari Ini</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-penjualan">Rp 0</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="stok-tab" data-bs-toggle="tab" data-bs-target="#stok" type="button" role="tab" aria-controls="stok" aria-selected="true">
+          <i class="fas fa-boxes me-1"></i> Stok Barang
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="penjualan-tab" data-bs-toggle="tab" data-bs-target="#penjualan" type="button" role="tab" aria-controls="penjualan" aria-selected="false">
+          <i class="fas fa-cash-register me-1"></i> Penjualan
+        </button>
+      </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="myTabContent">
+      <!-- Stok Barang Tab -->
+      <div class="tab-pane fade show active" id="stok" role="tabpanel" aria-labelledby="stok-tab">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Daftar Stok Barang</h6>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-cog me-1"></i> Opsi
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="#" id="btnExportPDF"><i class="fas fa-file-pdf me-1"></i> Export PDF</a></li>
+                <li><a class="dropdown-item" href="#" id="btnRefresh"><i class="fas fa-sync-alt me-1"></i> Refresh Data</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover" id="tabel-stok" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Barang</th>
+                    <th>Stok</th>
+                    <th>Harga Satuan</th>
+                    <th>Total Nilai</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Data akan diisi oleh JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Penjualan Tab -->
+      <div class="tab-pane fade" id="penjualan" role="tabpanel" aria-labelledby="penjualan-tab">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Transaksi Penjualan</h6>
+              </div>
+              <div class="card-body">
+                <form id="formPenjualan">
+                  <div class="mb-3">
+                    <label for="barangSelect" class="form-label">Pilih Barang</label>
+                    <select class="form-select" id="barangSelect" required>
+                      <option value="">-- Pilih Barang --</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="stokInfo" class="form-label">Stok Tersedia</label>
+                    <input type="text" class="form-control" id="stokInfo" readonly>
+                  </div>
+                  <div class="mb-3">
+                    <label for="hargaInfo" class="form-label">Harga Satuan</label>
+                    <input type="text" class="form-control" id="hargaInfo" readonly>
+                  </div>
+                  <div class="mb-3">
+                    <label for="jumlahJual" class="form-label">Jumlah</label>
+                    <input type="number" class="form-control" id="jumlahJual" min="1" required>
+                  </div>
+                  <button type="button" class="btn btn-primary w-100" id="btnTambahKeKeranjang">
+                    <i class="fas fa-cart-plus me-1"></i> Tambah ke Keranjang
+                  </button>
+                </form>
+
+                <hr>
+
+                <h6 class="font-weight-bold mt-4">Keranjang Penjualan</h6>
+                <div class="table-responsive">
+                  <table class="table table-sm" id="tabel-keranjang">
+                    <thead>
+                      <tr>
+                        <th>Barang</th>
+                        <th>Jumlah</th>
+                        <th>Harga</th>
+                        <th>Subtotal</th>
+                        <th>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Items keranjang akan diisi oleh JavaScript -->
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th colspan="3">Total</th>
+                        <th id="totalKeranjang">Rp 0</th>
+                        <th></th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+                <div class="d-grid gap-2">
+                  <button type="button" class="btn btn-success" id="btnProsesPenjualan">
+                    <i class="fas fa-check me-1"></i> Proses Penjualan
+                  </button>
+                  <button type="button" class="btn btn-secondary" id="btnKosongkanKeranjang">
+                    <i class="fas fa-trash me-1"></i> Kosongkan Keranjang
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="card shadow mb-4">
+              <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Riwayat Penjualan Hari Ini</h6>
+                <button class="btn btn-sm btn-outline-primary" id="btnRefreshPenjualan">
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </div>
+              <div class="card-body">
+                <div class="list-group" id="riwayatPenjualan">
+                  <!-- Riwayat penjualan akan diisi oleh JavaScript -->
+                  <div class="text-center py-4 text-muted">
+                    <i class="fas fa-receipt fa-2x mb-2"></i>
+                    <p>Belum ada transaksi hari ini</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah Barang -->
+  <div class="modal fade" id="tambahBarangModal" tabindex="-1" aria-labelledby="tambahBarangModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tambahBarangModalLabel">Tambah Barang Baru</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formTambahBarang">
+            <div class="mb-3">
+              <label for="namaBarang" class="form-label">Nama Barang</label>
+              <input type="text" class="form-control" id="namaBarang" required>
+            </div>
+            <div class="mb-3">
+              <label for="stokBarang" class="form-label">Stok</label>
+              <input type="number" class="form-control" id="stokBarang" min="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="hargaBarang" class="form-label">Harga Satuan (Rp)</label>
+              <input type="number" class="form-control" id="hargaBarang" min="0" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-primary" id="btnSimpanBarang">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit Barang -->
+  <div class="modal fade" id="editBarangModal" tabindex="-1" aria-labelledby="editBarangModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editBarangModalLabel">Edit Barang</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formEditBarang">
+            <input type="hidden" id="editId">
+            <div class="mb-3">
+              <label for="editNamaBarang" class="form-label">Nama Barang</label>
+              <input type="text" class="form-control" id="editNamaBarang" required>
+            </div>
+            <div class="mb-3">
+              <label for="editStokBarang" class="form-label">Stok</label>
+              <input type="number" class="form-control" id="editStokBarang" min="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="editHargaBarang" class="form-label">Harga Satuan (Rp)</label>
+              <input type="number" class="form-control" id="editHargaBarang" min="0" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-primary" id="btnUpdateBarang">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase App (core) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  
+  <!-- Main Application Script -->
+  <script src="main.js"></script>
+</body>
+
+</html>
